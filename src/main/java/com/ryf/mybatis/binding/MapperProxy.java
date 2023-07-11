@@ -1,9 +1,10 @@
 package com.ryf.mybatis.binding;
 
+import com.ryf.mybatis.session.SqlSession;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Map;
 
 /**
  * @author ryf
@@ -17,9 +18,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     private static final Long serialVersionUID = -8737713205817139458L;
     private final Class<T> mapperInterface;
 
-    private Map<String, String> sqlSession;
+    private SqlSession sqlSession;
 
-    public MapperProxy(Class<T> mapperInterface, Map<String, String> sqlSession) {
+    public MapperProxy(Class<T> mapperInterface, SqlSession sqlSession) {
         this.mapperInterface = mapperInterface;
         this.sqlSession = sqlSession;
     }
@@ -27,9 +28,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (Object.class.equals(method.getName())) {
+            // 调用 toString、equals、hashCode 等父类方法
             return method.invoke(proxy, args);
         } else {
-            return "你被代理了" + sqlSession.get(mapperInterface.getName() + "." + method.getName());
+            return sqlSession.selectOne(method.getName(), args);
         }
     }
 }
