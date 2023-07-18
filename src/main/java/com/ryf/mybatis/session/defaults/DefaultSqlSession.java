@@ -1,6 +1,7 @@
 package com.ryf.mybatis.session.defaults;
 
-import com.ryf.mybatis.binding.MapperRegistry;
+import com.ryf.mybatis.mapping.MappedStatement;
+import com.ryf.mybatis.session.Configuration;
 import com.ryf.mybatis.session.SqlSession;
 
 /**
@@ -15,10 +16,10 @@ public class DefaultSqlSession implements SqlSession {
     /**
      * mapper注册器
      */
-    private MapperRegistry mapperRegistry;
+    private Configuration configuration;
 
-    public DefaultSqlSession(MapperRegistry mapperRegistry) {
-        this.mapperRegistry = mapperRegistry;
+    public DefaultSqlSession(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -28,13 +29,18 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        return (T) ("你被代理了！" + "方法：" + statement + " 入参：" + parameter);
+        MappedStatement mappedStatement = configuration.getMappedStatement(statement);
+        return (T) ("你被代理了！" + "方法：" + statement + " 入参：" + parameter + "\n待执行sql:" + mappedStatement.getSql());
     }
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        return mapperRegistry.getMapper(type, this);
+        return configuration.getMapper(type, this);
     }
 
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 
 }

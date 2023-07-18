@@ -1,6 +1,7 @@
 package com.ryf.mybatis.session;
 
 import com.ryf.mybatis.builder.xml.XMLConfigBuilder;
+import com.ryf.mybatis.session.defaults.DefaultSqlSessionFactory;
 
 import java.io.Reader;
 
@@ -18,7 +19,7 @@ public class SqlSessionFactoryBuilder {
         return build(xmlConfigBuilder.parse());
     }
 
-    private SqlSessionFactory build(Configuration parse) {
-        return null;
+    private SqlSessionFactory build(Configuration config) {
+        return new DefaultSqlSessionFactory(config);
     }
 }

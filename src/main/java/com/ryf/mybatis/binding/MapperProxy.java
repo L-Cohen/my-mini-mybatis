@@ -5,6 +5,7 @@ import com.ryf.mybatis.session.SqlSession;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * @author ryf
@@ -19,10 +20,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     private final Class<T> mapperInterface;
 
     private SqlSession sqlSession;
+    private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(Class<T> mapperInterface, SqlSession sqlSession) {
+    public MapperProxy(Class<T> mapperInterface, SqlSession sqlSession, Map<Method, MapperMethod> methodCache) {
         this.mapperInterface = mapperInterface;
         this.sqlSession = sqlSession;
+        this.methodCache = methodCache;
     }
 
     @Override
@@ -30,8 +33,19 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         if (Object.class.equals(method.getName())) {
             // 调用 toString、equals、hashCode 等父类方法
             return method.invoke(proxy, args);
-        } else {
-            return sqlSession.selectOne(method.getName(), args);
         }
+        //这里优化了，去缓存中找MapperMethod
+        final MapperMethod mapperMethod = cachedMapperMethod(method);
+        return mapperMethod.execute(sqlSession, args);
+    }
+
+    private MapperMethod cachedMapperMethod(Method method) {
+        MapperMethod mapperMethod = methodCache.get(method);
+        if (mapperMethod == null) {
+            //找不到才去new
+            mapperMethod = new MapperMethod(mapperInterface, method, sqlSession.getConfiguration());
+            methodCache.put(method, mapperMethod);
+        }
+        return mapperMethod;
     }
 }

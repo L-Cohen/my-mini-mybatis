@@ -2,6 +2,7 @@ package com.ryf.mybatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
 import com.google.common.collect.Maps;
+import com.ryf.mybatis.session.Configuration;
 import com.ryf.mybatis.session.SqlSession;
 
 import java.util.Map;
@@ -17,10 +18,16 @@ import java.util.Set;
  */
 public class MapperRegistry {
 
+    private Configuration config;
+
     /**
      * 将已添加的映射器代理加入到 HashMap
      */
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = Maps.newHashMap();
+
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
 
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
@@ -46,5 +53,9 @@ public class MapperRegistry {
         for (Class<?> mapperClass : mapperSet) {
             addMapper(mapperClass);
         }
+    }
+
+    public boolean hasMapper(Class<?> type) {
+        return knownMappers.containsKey(type);
     }
 }

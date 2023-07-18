@@ -1,6 +1,6 @@
 package com.ryf.mybatis.session.defaults;
 
-import com.ryf.mybatis.binding.MapperRegistry;
+import com.ryf.mybatis.session.Configuration;
 import com.ryf.mybatis.session.SqlSession;
 import com.ryf.mybatis.session.SqlSessionFactory;
 
@@ -13,15 +13,15 @@ import com.ryf.mybatis.session.SqlSessionFactory;
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
-    private final MapperRegistry mapperRegistry;
+    private final Configuration configuration;
 
-    public DefaultSqlSessionFactory(MapperRegistry mapperRegistry) {
-        this.mapperRegistry = mapperRegistry;
+    public DefaultSqlSessionFactory(Configuration configuration) {
+        this.configuration = configuration;
     }
 
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(mapperRegistry);
+        return new DefaultSqlSession(configuration);
     }
 }
