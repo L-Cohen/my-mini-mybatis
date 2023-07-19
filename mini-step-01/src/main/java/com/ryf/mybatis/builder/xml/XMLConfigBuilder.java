@@ -44,7 +44,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     public Configuration parse() {
         try {
-            mapperElement(root.element("mapper"));
+            mapperElement(root.element("mappers"));
             return configuration;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -85,8 +85,8 @@ public class XMLConfigBuilder extends BaseBuilder {
                 }
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
-                SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toLowerCase());
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, sqlCommandType, parameterType, resultType, sql, parameter).build();
+                SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase());
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, sqlCommandType, msId, parameterType, resultType, sql, parameter).build();
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }

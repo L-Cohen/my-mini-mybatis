@@ -1,9 +1,0 @@
-<mappers>
-    <mapper namespace="com.ryf.mybatis.test.dao.IUserDao">
-        <select id="getUserId" parameterType="java.lang.String" resultType="com.ryf.mybatis.test.to.User">
-            SELECT id, userId, userHead, createTime
-            FROM user
-            where id = #{id}
-        </select>
-    </mapper>
-</mappers>

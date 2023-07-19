@@ -9,5 +9,5 @@ package com.ryf.mybatis.test.dao;
  */
 public interface IUserDao {
 
-    public String getUserId(String id);
+    String queryUserInfoById(String id);
 }

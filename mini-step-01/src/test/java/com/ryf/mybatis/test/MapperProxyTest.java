@@ -61,7 +61,7 @@ public class MapperProxyTest {
 
         // 2. 获取映射器对象
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        String result = userDao.getUserId("1");
+        String result = userDao.queryUserInfoById("1");
         logger.info("测试结果：{}", result);
     }
 }
