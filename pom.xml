@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>mini-step-01</module>
+        <module>mini-step-02</module>
     </modules>
 
     <properties>
