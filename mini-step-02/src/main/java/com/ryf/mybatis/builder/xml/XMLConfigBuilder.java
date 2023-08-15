@@ -1,20 +1,25 @@
 package com.ryf.mybatis.builder.xml;
 
 import com.ryf.mybatis.builder.BaseBuilder;
+import com.ryf.mybatis.datasouce.DataSourceFactory;
 import com.ryf.mybatis.io.Resources;
+import com.ryf.mybatis.mapping.Environment;
 import com.ryf.mybatis.mapping.MappedStatement;
 import com.ryf.mybatis.mapping.SqlCommandType;
 import com.ryf.mybatis.session.Configuration;
+import com.ryf.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +50,8 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     public Configuration parse() {
         try {
+            // 环境
+            environmentsElement(root.element("environments"));
             mapperElement(root.element("mappers"));
             return configuration;
         } catch (Exception e) {
@@ -52,8 +59,50 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * <environments default="development">
+     * <environment id="development">
+     * <transactionManager type="JDBC">
+     * <property name="..." value="..."/>
+     * </transactionManager>
+     * <dataSource type="POOLED">
+     * <property name="driver" value="${driver}"/>
+     * <property name="url" value="${url}"/>
+     * <property name="username" value="${username}"/>
+     * <property name="password" value="${password}"/>
+     * </dataSource>
+     * </environment>
+     * </environments>
+     */
+    private void environmentsElement(Element environments) throws Exception {
+        String environment = environments.attributeValue("default");
+        List<Element> elements = environments.elements("environment");
+        for (Element element : elements) {
+            String id = element.attributeValue("id");
+            if (environment.equals(id)) {
+                // 获取到的是class 需要newInstance
+                TransactionFactory txFactory = (TransactionFactory) typeAliasRegistry.resolveAlias(element.element("transactionManager").attributeValue("type")).newInstance();
+                // 获取数据源类型
+                Element dataSource = element.element("dataSource");
+                String type = dataSource.attributeValue("type");
+                DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(type).newInstance();
+                Properties props = new Properties();
+                List<Element> propertyList = dataSource.elements("property");
+                for (Element property : propertyList) {
+                    props.setProperty(property.attributeValue("name"), property.attributeValue("value"));
+                }
+                DataSource realDataSource = dataSourceFactory.getDataSource();
+                Environment e = new Environment.Builder(id)
+                        .dataSource(realDataSource)
+                        .transactionFactory(txFactory)
+                        .build();
+                configuration.setEnvironment(e);
+            }
+        }
+    }
+
     private void mapperElement(Element mappers) throws Exception {
-        //获取xml配置文件中mappers标签下所有的mapper标签
+        // 获取xml配置文件中mappers标签下所有的mapper标签
         List<Element> elements = mappers.elements("mapper");
         for (Element element : elements) {
             // 解析处理，具体参照源码
@@ -91,7 +140,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }
-            //添加映射mapper的dao接口到核心配置中
+            // 添加映射mapper的dao接口到核心配置中
             configuration.addMapper(Resources.classForName(namespace));
         }
     }

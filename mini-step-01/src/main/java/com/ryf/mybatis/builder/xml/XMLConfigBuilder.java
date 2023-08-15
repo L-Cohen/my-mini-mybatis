@@ -86,6 +86,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 }
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
+                // 判断是mapper方法标签
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase());
                 MappedStatement mappedStatement = new MappedStatement.Builder(configuration, sqlCommandType, msId, parameterType, resultType, sql, parameter).build();
                 // 添加解析 SQL

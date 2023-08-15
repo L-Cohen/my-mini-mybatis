@@ -1,8 +1,12 @@
 package com.ryf.mybatis.session;
 
+import com.alibaba.druid.support.ibatis.DruidDataSourceFactory;
 import com.google.common.collect.Maps;
 import com.ryf.mybatis.binding.MapperRegistry;
+import com.ryf.mybatis.mapping.Environment;
 import com.ryf.mybatis.mapping.MappedStatement;
+import com.ryf.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.ryf.mybatis.type.TypeAliasRegistry;
 
 import java.util.Map;
 
@@ -17,11 +21,19 @@ public class Configuration {
     /**
      * 映射注册机
      */
-    private MapperRegistry mapperRegistry = new MapperRegistry(this);
+    protected MapperRegistry mapperRegistry = new MapperRegistry(this);
+    protected Environment environment;
+    // 类型别名注册机
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
     /**
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatement = Maps.newHashMap();
+
+    public Configuration() {
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
     public void addMappedStatement(MappedStatement statement) {
         mappedStatement.put(statement.getId(), statement);
     }
@@ -48,5 +60,29 @@ public class Configuration {
 
     public boolean hasMapper(Class<?> type) {
         return mapperRegistry.hasMapper(type);
+    }
+
+    public MapperRegistry getMapperRegistry() {
+        return mapperRegistry;
+    }
+
+    public void setMapperRegistry(MapperRegistry mapperRegistry) {
+        this.mapperRegistry = mapperRegistry;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
+
+    public Map<String, MappedStatement> getMappedStatement() {
+        return mappedStatement;
     }
 }
