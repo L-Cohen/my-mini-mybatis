@@ -1,8 +1,8 @@
 package com.ryf.mybatis.session;
 
-import com.alibaba.druid.support.ibatis.DruidDataSourceFactory;
 import com.google.common.collect.Maps;
 import com.ryf.mybatis.binding.MapperRegistry;
+import com.ryf.mybatis.datasouce.druid.DruidDataSourceFactory;
 import com.ryf.mybatis.mapping.Environment;
 import com.ryf.mybatis.mapping.MappedStatement;
 import com.ryf.mybatis.transaction.jdbc.JdbcTransactionFactory;

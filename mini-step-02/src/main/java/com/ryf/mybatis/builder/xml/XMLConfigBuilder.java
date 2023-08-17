@@ -3,6 +3,7 @@ package com.ryf.mybatis.builder.xml;
 import com.ryf.mybatis.builder.BaseBuilder;
 import com.ryf.mybatis.datasouce.DataSourceFactory;
 import com.ryf.mybatis.io.Resources;
+import com.ryf.mybatis.mapping.BoundSql;
 import com.ryf.mybatis.mapping.Environment;
 import com.ryf.mybatis.mapping.MappedStatement;
 import com.ryf.mybatis.mapping.SqlCommandType;
@@ -91,6 +92,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                 for (Element property : propertyList) {
                     props.setProperty(property.attributeValue("name"), property.attributeValue("value"));
                 }
+                dataSourceFactory.setProperties(props);
                 DataSource realDataSource = dataSourceFactory.getDataSource();
                 Environment e = new Environment.Builder(id)
                         .dataSource(realDataSource)
@@ -136,7 +138,8 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase());
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, sqlCommandType, msId, parameterType, resultType, sql, parameter).build();
+                BoundSql boundSql = new BoundSql(parameterType, resultType, sql, parameter);
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType, boundSql).build();
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }

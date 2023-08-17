@@ -64,4 +64,18 @@ public class MapperProxyTest {
         String result = userDao.queryUserInfoById("1");
         logger.info("测试结果：{}", result);
     }
+
+    @Test
+    public void testQueryFromDb() throws IOException {
+        // 获取配置
+        Reader resource = Resources.getResourceAsReader("mybatis-config-datasource.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resource);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        // 2. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+        String result = userDao.queryUserInfoById("1");
+        logger.info("测试结果：{}", result);
+    }
+
 }
