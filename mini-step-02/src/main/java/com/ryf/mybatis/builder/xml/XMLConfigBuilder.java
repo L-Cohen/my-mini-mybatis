@@ -132,7 +132,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                     for (int i = 1; i < matcher.groupCount(); i++) {
                         String group = matcher.group(i);
                         parameter.put(i, group);
-                        sql = sql.replace("?", group);
+                        sql = sql.replace(group, "?");
                     }
                 }
                 String msId = namespace + "." + id;

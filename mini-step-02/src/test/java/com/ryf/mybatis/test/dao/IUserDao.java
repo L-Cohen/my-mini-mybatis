@@ -1,5 +1,7 @@
 package com.ryf.mybatis.test.dao;
 
+import com.ryf.mybatis.test.to.User;
+
 /**
  * @author ryf
  * @version 1.0
@@ -9,5 +11,6 @@ package com.ryf.mybatis.test.dao;
  */
 public interface IUserDao {
 
-    String queryUserInfoById(String id);
+    String queryUserInfoByIdStr(String id);
+    User queryUserInfoById(String id);
 }

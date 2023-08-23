@@ -4,7 +4,7 @@
 
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="com.ryf.mybatis.test.to.User">
         SELECT id, username,password
-        FROM user
+        FROM t_user
         where id = #{id}
     </select>
 

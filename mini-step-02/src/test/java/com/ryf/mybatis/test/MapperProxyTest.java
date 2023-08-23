@@ -6,6 +6,7 @@ import com.ryf.mybatis.session.SqlSession;
 import com.ryf.mybatis.session.SqlSessionFactory;
 import com.ryf.mybatis.session.SqlSessionFactoryBuilder;
 import com.ryf.mybatis.test.dao.IUserDao;
+import com.ryf.mybatis.test.to.User;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class MapperProxyTest {
 
         // 2. 获取映射器对象
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        String result = userDao.queryUserInfoById("1");
+        String result = userDao.queryUserInfoByIdStr("1");
         logger.info("测试结果：{}", result);
     }
 
@@ -74,8 +75,8 @@ public class MapperProxyTest {
 
         // 2. 获取映射器对象
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        String result = userDao.queryUserInfoById("1");
-        logger.info("测试结果：{}", result);
+        User user = userDao.queryUserInfoById("1");
+        logger.info("测试结果：{}", user);
     }
 
 }
